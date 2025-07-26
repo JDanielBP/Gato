@@ -18,8 +18,4 @@
 		* Si eligen 'S', volverá al inicio donde pregunta el número de jugadores
 		* Si eligen 'N', muestra el mensaje '¡Gracias por jugar!' y sale del programa
 
-
-## NOTAS
-
-* Pienso continuar con el proyecto más adelante, cosas como refactorización de código, agregar un Oponente IA y probablemente escribir el código en inglés (variables, funciones, clases, etc.) serán hechas más adelante
-* Mientras eso ocurre, cualquier sugerencia, comentario u opinión es bienvenido ;)
+Cualquier sugerencia, comentario u opinión es bienvenido ;)
