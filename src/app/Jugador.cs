@@ -1,147 +1,127 @@
 ﻿using System;
+using System.Drawing;
+using System.Linq;
 
 namespace Gato.src.app
 {
-    class Jugador : JuegoGato
+    internal class Jugador : IJugador
     {
-
-        public Jugador(char opc) : base()
+        Tablero tablero;
+        public int Id { get; }
+        public char Simbolo { get; }
+        enum Error
         {
-            XO = opc;
+            CaracterInvalido,
+            SimboloInvalido,
+            PosicionOcupada
         }
-        public override void ComienzaTurnoDeJugador()
+        public Jugador(int id, char simbolo, Tablero tablero)
         {
-            Console.SetCursorPosition(origCol, origFila);
-            //ConsoleColor colorJugador = ConsoleColor.Red;
-            XOaux = XO; // Pasa el valor de 'X' ó 'O' a la variable de la clase padre, para que evalúe al ganador
-            if (turnoJugador1)
-                WriteAt("Jugador 1 ", 12, 4);
-            else
-                WriteAt("Jugador 2 ", 12, 4);
-            if (XO == 'X')
-                Console.ForegroundColor = ConsoleColor.Green; // Color del jugador con X
-            else
-                Console.ForegroundColor = ConsoleColor.Red; // Color del jugador con O
-            WriteAt("Te toca: " + XO, 12, 5);
-            JuegaJugador();
+            Id = id;
+            Simbolo = simbolo;
+            this.tablero = tablero;
+        }
+
+        public void Jugar()
+        {
+            while (true)
+            {
+                Point posicion = tablero.PosicionConsola;
+                PosicionamientoCursor.PosicionActual(tablero.PosicionMatriz, posicion, tablero.limiteInferior);
+                Console.SetCursorPosition(posicion.X, posicion.Y);
+
+                ConsoleKeyInfo input = Console.ReadKey(true); //Captura la acción del jugador y no lo imprima en pantalla
+                MostrarError(null); // Borrar el mensaje de error anterior (si lo hay)
+
+                ConsoleKey[] movimientoValido = { ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow};
+                ConsoleKey[] tiroValido = { ConsoleKey.X, ConsoleKey.O };
+                if (movimientoValido.Contains(input.Key))
+                {
+                    Mover(posicion, input.Key);
+                }
+                else if (tiroValido.Contains(input.Key))
+                {
+                    bool terminarTurno = Tirar(posicion, input.Key);
+                    if (terminarTurno) break;
+                }
+                else
+                {
+                    MostrarError(Error.CaracterInvalido);
+                }
+            };
             Console.ResetColor();
         }
-        public void JuegaJugador()
+        private void Mover(Point posicion, ConsoleKey movimiento)
         {
-            ConsoleKeyInfo action;
-            bool sigaEsteTurno = true;
-            do
+            if (movimiento == ConsoleKey.UpArrow && posicion.Y > tablero.limiteSuperior)
             {
-                PosicionActual();
-                if (XO == 'X')
-                {
-                    Console.ForegroundColor = ConsoleColor.Green; // Color del jugador con X
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Red; // Color del jugador con O
-                }
-                action = Console.ReadKey(false); //Captura la acción del jugador y no lo imprima en patalla
-                WriteAt("                         ", 1, 20);
-                switch (action.Key) //Evalúa la acción del jugador
-                {
-                    case ConsoleKey.RightArrow:
-                        AsegurarColorXO();
-                        if (origCol < limitRightArrow)
-                        {
-                            Console.SetCursorPosition(origCol += 4, origFila);
-                            x++;
-                        }
-                        else Console.SetCursorPosition(origCol, origFila);
-                        break;
-                    case ConsoleKey.LeftArrow:
-                        AsegurarColorXO();
-                        if (origCol > limitLeftArrow)
-                        {
-                            Console.SetCursorPosition(origCol -= 4, origFila);
-                            x--;
-                        }
-                        else Console.SetCursorPosition(origCol, origFila);
-                        break;
-                    case ConsoleKey.UpArrow:
-                        AsegurarColorXO();
-                        if (origFila > limitUpArrow)
-                        {
-                            Console.SetCursorPosition(origCol, origFila -= 2);
-                            y--;
-                        }
-                        else Console.SetCursorPosition(origCol, origFila);
-                        break;
-                    case ConsoleKey.DownArrow:
-                        AsegurarColorXO();
-                        if (origFila < limitDownArrow)
-                        {
-                            Console.SetCursorPosition(origCol, origFila += 2);
-                            y++;
-                        }
-                        else Console.SetCursorPosition(origCol, origFila);
-                        break;
-                    case ConsoleKey.X:
-                        Tirar(ref sigaEsteTurno, ConsoleKey.X);
-                        break;
-                    case ConsoleKey.O:
-                        Tirar(ref sigaEsteTurno, ConsoleKey.O);
-                        break;
-                    default:
-                        WriteAt(tableroMatriz[x, y], origCol, origFila);
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        WriteAt("                     ", 1, 20);
-                        WriteAt("Caracter no válido...", 1, 20);
-                        Console.ResetColor();
-                        Console.SetCursorPosition(origCol, origFila);
-                        break;
-                }
-            } while (sigaEsteTurno); //Mientras siga este turno
-        }
-        public void AsegurarColorXO()
-        {
-            if (tableroMatriz[x, y] == 'X')
-            {
-                Console.ForegroundColor = ConsoleColor.Green; // Asegura color del Jugador
-                WriteAt(tableroMatriz[x, y], origCol, origFila);
+                tablero.MoverPosicion(0, -1);
             }
-            if (tableroMatriz[x, y] == 'O')
+            else  if (movimiento == ConsoleKey.DownArrow && posicion.Y < tablero.limiteInferior)
             {
-                Console.ForegroundColor = ConsoleColor.Red; // Asegura color del otro Jugador
-                WriteAt(tableroMatriz[x, y], origCol, origFila);
+                tablero.MoverPosicion(0, 1);
+            }
+            else if (movimiento == ConsoleKey.LeftArrow && posicion.X > tablero.limiteIzquierdo)
+            {
+                tablero.MoverPosicion(-1, 0);
+            }
+            else if (movimiento == ConsoleKey.RightArrow && posicion.X < tablero.limiteDerecho)
+            {
+                tablero.MoverPosicion(1, 0);
             }
         }
-        public void Tirar(ref bool sigaEsteTurno, ConsoleKey tiro)
+        private bool Tirar(Point posicion, ConsoleKey tiro)
         {
-            if (tableroMatriz[x, y] != ' ')
+            char simboloActual = tablero.GetCaracter(tablero.PosicionMatriz);
+            bool terminarTurno = false;
+
+            if (simboloActual != ' ')
             {
-                WriteAt(tableroMatriz[x, y], origCol, origFila);
-                AsegurarColorXO();
-                Console.SetCursorPosition(origCol, origFila);
-                Console.ForegroundColor = ConsoleColor.Red;
-                WriteAt("Posición Ocupada!", 1, 20);
-                Console.ResetColor();
+                MostrarError(Error.PosicionOcupada);
+            }
+            else if (Simbolo.ToString() != tiro.ToString())
+            {
+                MostrarError(Error.SimboloInvalido);
             }
             else
             {
-                if (XO != Convert.ToChar(tiro)) //Si no te toca jugar con X o con O, entonces...
-                {
-                    WriteAt(tableroMatriz[x, y], origCol, origFila);
-                    Console.SetCursorPosition(origCol, origFila);
-                    if (XO == 'X')
-                        Console.ForegroundColor = ConsoleColor.Green;
-                    else
-                        Console.ForegroundColor = ConsoleColor.Red;
-                    WriteAt("Tú juegas con " + XO + "!", 1, 20);
-                    Console.ResetColor();
-                }
-                else
-                {
-                    WriteAt(XO, origCol, origFila);
-                    tableroMatriz[x, y] = XO;
-                    sigaEsteTurno = false; // Ya no prosigue este turno, por lo tanto debe salir, mandando un 'false'
-                }
+                Console.ForegroundColor = Simbolo == 'X' ? ConsoleColor.Green : ConsoleColor.Red;
+                PosicionamientoCursor.WriteAt(Simbolo.ToString(), posicion.X, posicion.Y);
+                tablero.SetCaracter(tablero.PosicionMatriz, Simbolo);
+                terminarTurno = true;
             }
+            Console.SetCursorPosition(posicion.X, posicion.Y);
+            return terminarTurno;
+        }
+        private void MostrarError(Error? error)
+        {
+            ConsoleColor? color = null;
+            string texto;
+
+            if (error is null)
+            {
+                Console.ResetColor();
+                texto = "                     ";
+            }
+            else if (error == Error.CaracterInvalido)
+            {
+                color = ConsoleColor.Cyan;
+                texto = "Caracter no válido...";
+            }
+            else if (error == Error.PosicionOcupada)
+            {
+                color = ConsoleColor.Red;
+                texto = "Posición Ocupada!";
+            }
+            else // Error.SimboloInvalido
+            {
+                color = Simbolo == 'X' ? ConsoleColor.Green : ConsoleColor.Red;
+                texto = "Tú juegas con " + Simbolo + "!";
+            }
+
+            if (color is not null) Console.ForegroundColor = (ConsoleColor)color;
+            PosicionamientoCursor.WriteAt(texto, 1, 20);
+            Console.ResetColor();
         }
     }
 }

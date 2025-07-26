@@ -10,7 +10,7 @@ namespace Gato.src
         {
             Menu();
         }
-        public static void Menu()
+        static void Menu()
         {
             while (true)
             {
@@ -22,27 +22,32 @@ namespace Gato.src
                 Cargando(j2Opc);
 
                 // Escenario
-                Escenario.PreparandoEscenario();
-                Escenario.Tablero();
-                Escenario.DibujarSilueta();
+                Escenario escenario = new Escenario();
+                escenario.Titulo();
+                escenario.Silueta();
+                Tablero tablero = new Tablero();
+                tablero.Dibujar();
 
                 // Juego
-                Juego(numJugadores, j1Opc, j2Opc);
+                JuegoGato JG = Configuracion(tablero, numJugadores, j1Opc, j2Opc);
+                var (estado, ganador) = JG.Iniciar();
+                if (estado == JuegoGato.Estado.Victoria)
+                {
+                    escenario.Cohete();
+                    PosicionamientoCursor.WriteAt($"Felicidades Jugador {ganador.Id}! Has ganado!", 0, 20);
+                }
 
-                bool seguirJugando = JugarDeNuevo();
+                bool seguirJugando = JG.VolverAJugar();
                 if (!seguirJugando) break;
             };
-
-            Console.ResetColor();
-            Console.SetCursorPosition(10, 30);
+            Salida();
         }
-        public static byte NumeroDeJugadores()
+        static byte NumeroDeJugadores()
         {
             while (true)
             {
                 Console.Clear();
                 Console.WriteLine("Ingresa el número de jugadores: (1 ó 2)");
-                Console.Write("> ");
                 string input = Console.ReadLine();
                 if (byte.TryParse(input, out byte result) && (result == 1 || result == 2))
                 {
@@ -55,27 +60,23 @@ namespace Gato.src
                 }
             }
         }
-        public static (char, char) EligeSimbolo()
+        static (char, char) EligeSimbolo()
         {
             while (true)
             {
                 Console.Clear();
                 Console.WriteLine("Elige Jugador 1: X ó O?");
-                Console.Write("> ");
-                string input = Console.ReadLine();
-                if (char.TryParse(input, out char simbolo))
+                string input = Console.ReadLine().Trim().ToUpper();
+                if (char.TryParse(input, out char simbolo) && (simbolo == 'X' || simbolo == 'O'))
                 {
-                    simbolo = char.ToUpper(simbolo);
-                    if (simbolo == 'X' || simbolo == 'O') {
-                        char simbolo2 = simbolo == 'O' ? 'X' : 'O'; // Si jugador 1 elige 'O', jugador 2 tendrá 'X'
-                        return (simbolo, simbolo2);
-                    }
+                    char simbolo2 = simbolo == 'O' ? 'X' : 'O'; // Si jugador 1 elige 'O', jugador 2 tendrá 'X'
+                    return (simbolo, simbolo2);
                 }
                 Console.WriteLine("\nDebe seleccionar 'X' o 'O'\nPresiona ENTER para continuar...");
                 Console.ReadKey();
             }
         }
-        public static void Cargando(char j2Opc)
+        static void Cargando(char j2Opc)
         {
             Random rand = new Random();
             Console.ResetColor();
@@ -97,33 +98,21 @@ namespace Gato.src
             }
             Console.Clear();
         }
-        public static void Juego(byte noJugadores, char j1Opc, char j2Opc)
+        static JuegoGato Configuracion(Tablero tablero, byte noJugadores, char j1Opc, char j2Opc)
         {
-            JuegoGato j1 = new Jugador(j1Opc);
-            JuegoGato j2 = noJugadores == 1
-                ? new OponenteIA(j2Opc) // OponenteIA aún no funciona
-                : new Jugador(j2Opc);
+            IJugador j1 = new Jugador(1, j1Opc, tablero);
+            IJugador j2 = noJugadores == 1
+                ? new OponenteIA(2, j2Opc, tablero) // OponenteIA aún no funciona
+                : new Jugador(2, j2Opc, tablero);
 
-            // Inicializa el juego
-            JuegoGato JG = new JuegoGato();
-            JuegoGato.InicializarPosicionCursor();
-
-            JG.Partida(j1, j2);
+            return new JuegoGato(tablero, j1, j2);
         }
-        public static bool JugarDeNuevo()
+        static void Salida()
         {
-            char JugarDeNuevo = JuegoGato.JugarDeNuevo;
-            if (JugarDeNuevo == 'S') return true;
-            else
-            {
-                for (int i = 24; i < JuegoGato.Y1; i++) //Borra la animación del festejo tipo cohete
-                    PosicionamientoCursor.WriteAt("                             ", 0, i);
-
-                PosicionamientoCursor.WriteAt("¡Gracias por jugar!", 0, 26);
-                PosicionamientoCursor.WriteAt("Presiona cualquier tecla para salir...", 0, 27);
-                Console.ReadKey();
-                return false;
-            }
+            PosicionamientoCursor.WriteAt("¡Gracias por jugar!", 0, 25);
+            PosicionamientoCursor.WriteAt("Presiona cualquier tecla para salir...", 0, 26);
+            Console.ReadKey();
+            Console.SetCursorPosition(0, 29);
         }
     }
 }
