@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Gato.src.Helpers;
+using System;
 using System.Drawing;
 
-namespace Gato.src.app
+namespace Gato.src.Juego
 {
     internal class Tablero
     {
@@ -40,7 +41,7 @@ namespace Gato.src.app
         {
             for (int i = 0; i < tableroDibujo.Length; i++)
             {
-                PosicionamientoCursor.WriteAt(tableroDibujo[i], posicion.X, posicion.Y + i + 1);
+                CursorHelper.WriteAt(tableroDibujo[i], posicion.X, posicion.Y + i + 1);
             }
         }
         public void PosicionInicial() => posicionConsola = new Point(posicion.X + 2, posicion.Y + 2);

@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Gato.src.Helpers;
+using Gato.src.Jugadores;
+using System;
 
-namespace Gato.src.app
+namespace Gato.src.Juego
 {
-    internal class JuegoGato
+    internal class JuegoApp
     {
         Tablero tablero;
         IJugador p1;
@@ -13,7 +15,7 @@ namespace Gato.src.app
             Victoria,
             Empate
         }
-        public JuegoGato(Tablero tablero, IJugador p1, IJugador p2)
+        public JuegoApp(Tablero tablero, IJugador p1, IJugador p2)
         {
             this.tablero = tablero;
             this.p1 = p1;
@@ -47,26 +49,26 @@ namespace Gato.src.app
         {
             while (true)
             {
-                PosicionamientoCursor.WriteAt("¿Volver a jugar? S/N", 0, 22);
+                CursorHelper.WriteAt("¿Volver a jugar? S/N", 0, 22);
                 Console.SetCursorPosition(0, 23);
                 string input = Console.ReadLine().Trim().ToUpper();
 
                 if (char.TryParse(input, out char result) && (result == 'S' || result == 'N'))
                     return result == 'S';
 
-                PosicionamientoCursor.WriteAt("Ingresa un valor válido...", 0, 25);
+                CursorHelper.WriteAt("Ingresa un valor válido...", 0, 25);
                 Console.ReadKey(true);
-                PosicionamientoCursor.WriteAt("                          ", 0, 23);
-                PosicionamientoCursor.WriteAt("                          ", 0, 25);
+                CursorHelper.WriteAt("                          ", 0, 23);
+                CursorHelper.WriteAt("                          ", 0, 25);
             }
         }
 
         private void MostrarTurno(IJugador p)
         {
             Console.ResetColor();
-            PosicionamientoCursor.WriteAt($"Jugador {p.Id} ", 12, 4);
+            CursorHelper.WriteAt($"Jugador {p.Id} ", 12, 4);
             Console.ForegroundColor = p.Simbolo == 'X' ? ConsoleColor.Green : ConsoleColor.Red;
-            PosicionamientoCursor.WriteAt("Te toca: " + p.Simbolo, 12, 5);
+            CursorHelper.WriteAt("Te toca: " + p.Simbolo, 12, 5);
         }
         private Estado EvaluarEstado(IJugador jugador)
         {

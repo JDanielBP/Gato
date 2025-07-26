@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Gato.src.Juego;
+using System;
 
-namespace Gato.src.app
+namespace Gato.src.Jugadores
 {
-    internal class OponenteIA : IJugador
+    internal class JugadorIA : IJugador
     {
         Tablero tablero;
         public int Id { get; }
         public char Simbolo { get; }
-        public OponenteIA(int id, char simbolo, Tablero tablero)
+        public JugadorIA(int id, char simbolo, Tablero tablero)
         {
             Id = id;
             Simbolo = simbolo;

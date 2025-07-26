@@ -1,5 +1,7 @@
 ﻿using System;
-using Gato.src.app;
+using Gato.src.Helpers;
+using Gato.src.Juego;
+using Gato.src.Jugadores;
 
 namespace Gato.src
 {
@@ -29,12 +31,12 @@ namespace Gato.src
                 tablero.Dibujar();
 
                 // Juego
-                JuegoGato JG = Configuracion(tablero, numJugadores, j1Opc, j2Opc);
+                JuegoApp JG = Configuracion(tablero, numJugadores, j1Opc, j2Opc);
                 var (estado, ganador) = JG.Iniciar();
-                if (estado == JuegoGato.Estado.Victoria)
+                if (estado == JuegoApp.Estado.Victoria)
                 {
                     escenario.Cohete();
-                    PosicionamientoCursor.WriteAt($"Felicidades Jugador {ganador.Id}! Has ganado!", 0, 20);
+                    CursorHelper.WriteAt($"Felicidades Jugador {ganador.Id}! Has ganado!", 0, 20);
                 }
 
                 bool seguirJugando = JG.VolverAJugar();
@@ -98,19 +100,19 @@ namespace Gato.src
             }
             Console.Clear();
         }
-        static JuegoGato Configuracion(Tablero tablero, byte noJugadores, char j1Opc, char j2Opc)
+        static JuegoApp Configuracion(Tablero tablero, byte noJugadores, char j1Opc, char j2Opc)
         {
             IJugador j1 = new Jugador(1, j1Opc, tablero);
             IJugador j2 = noJugadores == 1
-                ? new OponenteIA(2, j2Opc, tablero) // OponenteIA aún no funciona
+                ? new JugadorIA(2, j2Opc, tablero) // OponenteIA aún no funciona
                 : new Jugador(2, j2Opc, tablero);
 
-            return new JuegoGato(tablero, j1, j2);
+            return new JuegoApp(tablero, j1, j2);
         }
         static void Salida()
         {
-            PosicionamientoCursor.WriteAt("¡Gracias por jugar!", 0, 25);
-            PosicionamientoCursor.WriteAt("Presiona cualquier tecla para salir...", 0, 26);
+            CursorHelper.WriteAt("¡Gracias por jugar!", 0, 25);
+            CursorHelper.WriteAt("Presiona cualquier tecla para salir...", 0, 26);
             Console.ReadKey();
             Console.SetCursorPosition(0, 29);
         }

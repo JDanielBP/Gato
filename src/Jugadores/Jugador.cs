@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Gato.src.Helpers;
+using Gato.src.Juego;
+using System;
 using System.Drawing;
 using System.Linq;
 
-namespace Gato.src.app
+namespace Gato.src.Jugadores
 {
     internal class Jugador : IJugador
     {
@@ -27,13 +29,13 @@ namespace Gato.src.app
             while (true)
             {
                 Point posicion = tablero.PosicionConsola;
-                PosicionamientoCursor.PosicionActual(tablero.PosicionMatriz, posicion, tablero.limiteInferior);
+                CursorHelper.PosicionActual(tablero.PosicionMatriz, posicion, tablero.limiteInferior);
                 Console.SetCursorPosition(posicion.X, posicion.Y);
 
                 ConsoleKeyInfo input = Console.ReadKey(true); //Captura la acción del jugador y no lo imprima en pantalla
                 MostrarError(null); // Borrar el mensaje de error anterior (si lo hay)
 
-                ConsoleKey[] movimientoValido = { ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow};
+                ConsoleKey[] movimientoValido = { ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow };
                 ConsoleKey[] tiroValido = { ConsoleKey.X, ConsoleKey.O };
                 if (movimientoValido.Contains(input.Key))
                 {
@@ -57,7 +59,7 @@ namespace Gato.src.app
             {
                 tablero.MoverPosicion(0, -1);
             }
-            else  if (movimiento == ConsoleKey.DownArrow && posicion.Y < tablero.limiteInferior)
+            else if (movimiento == ConsoleKey.DownArrow && posicion.Y < tablero.limiteInferior)
             {
                 tablero.MoverPosicion(0, 1);
             }
@@ -86,7 +88,7 @@ namespace Gato.src.app
             else
             {
                 Console.ForegroundColor = Simbolo == 'X' ? ConsoleColor.Green : ConsoleColor.Red;
-                PosicionamientoCursor.WriteAt(Simbolo.ToString(), posicion.X, posicion.Y);
+                CursorHelper.WriteAt(Simbolo.ToString(), posicion.X, posicion.Y);
                 tablero.SetCaracter(tablero.PosicionMatriz, Simbolo);
                 terminarTurno = true;
             }
@@ -120,7 +122,7 @@ namespace Gato.src.app
             }
 
             if (color is not null) Console.ForegroundColor = (ConsoleColor)color;
-            PosicionamientoCursor.WriteAt(texto, 1, 20);
+            CursorHelper.WriteAt(texto, 1, 20);
             Console.ResetColor();
         }
     }

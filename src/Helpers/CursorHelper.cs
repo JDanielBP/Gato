@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 
-namespace Gato.src.app
+namespace Gato.src.Helpers
 {
-    internal static class PosicionamientoCursor
+    internal static class CursorHelper
     {
         public static void WriteAt(string s, int x, int y)
         {

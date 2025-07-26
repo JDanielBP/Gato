@@ -1,4 +1,4 @@
-﻿namespace Gato.src.app
+﻿namespace Gato.src.Jugadores
 {
     internal interface IJugador
     {

@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Gato.src.Helpers;
+using System;
 
-namespace Gato.src.app
+namespace Gato.src.Juego
 {
     internal class Escenario
     {
@@ -37,9 +38,9 @@ namespace Gato.src.app
         {
             Console.Title = "Benítez Peña José Daniel - Juego de Gato";
             Console.ForegroundColor = ConsoleColor.Green;
-            PosicionamientoCursor.WriteAt("******************************", 26, 0);
-            PosicionamientoCursor.WriteAt("         JUEGO DE GATO        ", 26, 1);
-            PosicionamientoCursor.WriteAt("******************************", 26, 2);
+            CursorHelper.WriteAt("******************************", 26, 0);
+            CursorHelper.WriteAt("         JUEGO DE GATO        ", 26, 1);
+            CursorHelper.WriteAt("******************************", 26, 2);
             Console.ResetColor();
         }
         public void Silueta()
@@ -47,7 +48,7 @@ namespace Gato.src.app
             Console.ForegroundColor = ConsoleColor.Blue;
             for (int i = 0; i < silueta.Length; i++)
             {
-                PosicionamientoCursor.WriteAt(silueta[i], 42, i + 4);
+                CursorHelper.WriteAt(silueta[i], 42, i + 4);
             }
             Console.ResetColor();
         }
@@ -65,14 +66,14 @@ namespace Gato.src.app
             // Subida
             for (int yi = y1; yi > topey1; yi--)
             {
-                PosicionamientoCursor.WriteAt("*", x1, yi);
+                CursorHelper.WriteAt("*", x1, yi);
                 System.Threading.Thread.Sleep(tiempo / 4);
             }
 
             // Se borra la subida
             for (int yi = y1; yi > topey1 + 1; yi--)
             {
-                PosicionamientoCursor.WriteAt(" ", x1, yi);
+                CursorHelper.WriteAt(" ", x1, yi);
                 --auxy1;
             }
 
@@ -87,10 +88,10 @@ namespace Gato.src.app
                 right += 2;
                 up -= 1;
                 down += 1;
-                PosicionamientoCursor.WriteAt("*", left, up);
-                PosicionamientoCursor.WriteAt("*", right, up);
-                PosicionamientoCursor.WriteAt("*", left, down);
-                PosicionamientoCursor.WriteAt("*", right, down);
+                CursorHelper.WriteAt("*", left, up);
+                CursorHelper.WriteAt("*", right, up);
+                CursorHelper.WriteAt("*", left, down);
+                CursorHelper.WriteAt("*", right, down);
                 System.Threading.Thread.Sleep(tiempo);
             }
 
